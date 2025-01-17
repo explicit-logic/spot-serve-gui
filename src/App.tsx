@@ -1,11 +1,14 @@
-import UploadPage from './components/pages/UploadPage';
+import { Toaster } from '@/components/ui/toaster';
+import { Outlet } from 'react-router';
+
 import './app.css';
 
 function App() {
   return (
-    <main className="flex flex-col items-center justify-center py-3">
-      <UploadPage />
-    </main>
+    <>
+      <Toaster />
+      <Outlet />
+    </>
   );
 }
 
