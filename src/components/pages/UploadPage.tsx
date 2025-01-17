@@ -1,16 +1,20 @@
+import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router';
+
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { Cloud, File, Loader2 } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
 
 interface UploadDropzoneProps {
   className?: string;
   onUpload?: (file: File) => Promise<void>;
 }
 
-export default function UploadPage() {
+export function Component() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-4 md:p-8">
       <Card className="w-full max-w-2xl p-6">
@@ -18,8 +22,7 @@ export default function UploadPage() {
           <h1 className="text-2xl font-bold">Upload ZIP Archive</h1>
           <UploadDropzone
             onUpload={async (file) => {
-              // Handle your file upload logic here
-              console.log('Uploading file:', file.name);
+              navigate('/connect', { replace: true, state: { file } });
             }}
           />
         </div>
