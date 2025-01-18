@@ -7,11 +7,11 @@ export const STATES = Object.freeze({
 
 export type StateType = (typeof STATES)[keyof typeof STATES];
 
-export const CLIENT_EVENTS = Object.freeze({
-  CLOSE: 'CLIENT:CLOSE',
-  ERROR: 'CLIENT:ERROR',
-  MESSAGE: 'CLIENT:MESSAGE',
-  OPEN: 'CLIENT:OPEN',
+export const CONNECTION_EVENTS = Object.freeze({
+  CLOSE: 'CONNECTION:CLOSE',
+  ERROR: 'CONNECTION:ERROR',
+  MESSAGE: 'CONNECTION:MESSAGE',
+  OPEN: 'CONNECTION:OPEN',
 } as const);
 
 export const SERVER_EVENTS = Object.freeze({

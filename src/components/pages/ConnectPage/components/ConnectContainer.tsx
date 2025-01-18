@@ -1,26 +1,40 @@
 import type Peer from 'peerjs';
-import {
-  useAsyncValue,
-  useLoaderData,
-  useLocation,
-  useNavigate,
-} from 'react-router';
+import { useEffect } from 'react';
+import { useAsyncValue, useLocation, useNavigate } from 'react-router';
 
 import Connect from './Connect';
 
+// Lib
+import { listenMessage } from '@/lib/peer/listenMessage';
+
 export default function ConnectContainer() {
-  const { state } = useLocation();
+  const { state } = useLocation() as { state: { file: File } };
   const navigate = useNavigate();
   const peer = useAsyncValue() as Peer;
   const { file } = state || {};
 
-  console.log(file, peer);
   if (!file || !peer) {
     navigate('/upload');
   }
 
   const peerId = peer.id;
   const websiteUrl = `https://yakovenkodenis.github.io/spot-serve-web?r=${peerId}`;
+
+  useEffect(() => {
+    const unListen = listenMessage(
+      'website-zip-archive',
+      (connection, { id }) => {
+        connection.send({
+          id,
+          result: file,
+        });
+      },
+    );
+
+    return () => {
+      unListen();
+    };
+  }, [file]);
 
   const handleDisconnect = () => {
     // Handle disconnect logic
