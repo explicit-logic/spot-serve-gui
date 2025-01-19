@@ -1,4 +1,8 @@
-# Spot Serve Desktop
+<div align="center">
+   <img align="center" width="128px" src="src-tauri/icons/128x128@2x.png" />
+	<h1 align="center"><b>Spot Serve Desktop</b></h1>
+  <br/>
+</div>
 
 The desktop companion app for Spot Serve - a seamless solution for developers to share quick, interactive previews of their websites. This desktop application works in conjunction with the [Spot Serve web platform](https://github.com/yakovenkodenis/spot-serve-web) to provide a streamlined experience for sharing local website previews.
 
