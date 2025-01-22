@@ -38,7 +38,7 @@ export default function ConnectContainer() {
 
   const handleDisconnect = () => {
     // Handle disconnect logic
-    console.log('Disconnecting...');
+    navigate('/upload');
   };
 
   const handleSendMessage = () => {
