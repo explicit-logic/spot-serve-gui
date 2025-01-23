@@ -18,7 +18,7 @@ export default function ConnectContainer() {
   }
 
   const peerId = peer.id;
-  const websiteUrl = `https://yakovenkodenis.github.io/spot-serve-web?r=${peerId}`;
+  const websiteUrl = `https://spot-serve.pages.dev?r=${peerId}`;
 
   useEffect(() => {
     const unListen = listenMessage(
