@@ -27,7 +27,7 @@ import { TABS } from './constants';
 import { type Values, schema } from './schema';
 
 const defaultValues = {
-  host: '',
+  host: '127.0.0.1',
   port: 3000,
   file: undefined,
 };
@@ -52,9 +52,6 @@ export const Component = () => {
   // Handle API form submission
   const onSubmit = async (data: Values) => {
     try {
-      // Implement your API configuration logic here
-      console.log('API Config:', data);
-
       navigate('/connect', { replace: true, state: data });
     } catch (error) {
       toast({
