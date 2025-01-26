@@ -39,8 +39,10 @@ export default function Connect({
     <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-lg p-6 space-y-6">
         {/* QR Code Section */}
-        <div className="flex justify-center p-4 bg-white rounded-lg">
-          <QRCode value={websiteUrl} size={256} />
+        <div className="flex justify-center">
+          <div className="p-4 rounded-lg border border-gray-300">
+            <QRCode value={websiteUrl} size={256} />
+          </div>
         </div>
 
         {/* URL Input Section */}

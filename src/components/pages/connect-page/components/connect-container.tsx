@@ -2,7 +2,7 @@ import type Peer from 'peerjs';
 import { useEffect } from 'react';
 import { useAsyncValue, useLocation, useNavigate } from 'react-router';
 
-import Connect from './Connect';
+import Connect from './connect';
 
 // Lib
 import { listenMessage } from '@/lib/peer/listenMessage';
