@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter, redirect } from 'react-router';
-import App from './App';
+import App from './app';
 
 const router = createBrowserRouter([
   {
@@ -14,11 +14,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'upload',
-        lazy: () => import('@/components/pages/UploadPage'),
+        lazy: () => import('@/components/pages/upload-page'),
       },
       {
         path: 'connect',
-        lazy: () => import('@/components/pages/ConnectPage'),
+        lazy: () => import('@/components/pages/connect-page'),
       },
     ],
   },

@@ -1,9 +1,9 @@
 import { connect } from '@/lib/peer/connect';
 import { Suspense } from 'react';
 import { Await, useLoaderData } from 'react-router';
-import ConnectContainer from './components/ConnectContainer';
-import ConnectError from './components/ConnectError';
-import ConnectSkeleton from './components/ConnectSkeleton';
+import ConnectContainer from './components/connect-container';
+import ConnectError from './components/connect-error';
+import ConnectSkeleton from './components/connect-skeleton';
 
 export function loader() {
   return {
