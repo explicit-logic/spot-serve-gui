@@ -8,9 +8,7 @@ export const schema = z.object({
     z.string().ip({ message: HOST_MESSAGE }),
   ]),
   port: z
-    .string()
-    .regex(/^\d+$/)
-    .transform(Number)
+    .union([z.string().regex(/^\d+$/).transform(Number), z.number()])
     .refine((n) => n >= 1 && n <= 65535, {
       message: 'Port must be between 1 and 65535',
     }),
