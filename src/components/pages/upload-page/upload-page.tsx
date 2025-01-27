@@ -2,12 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Toggle } from '@/components/ui/toggle';
-import { open } from '@tauri-apps/plugin-dialog';
 
 import { useForm } from 'react-hook-form';
 
@@ -24,6 +22,7 @@ import UploadTab from './components/upload-tab';
 
 import { TABS } from './constants';
 
+import DirectoryTab from './components/directory-tab';
 import { type Values, schema } from './schema';
 
 const defaultValues = {
@@ -36,9 +35,6 @@ export const Component = () => {
   const [showApiFields, setShowApiFields] = useState(false);
 
   const [activeTab, setActiveTab] = useState<string>(TABS.DIRECTORY);
-  const [selectedDirectory, setSelectedDirectory] = useState<string | null>(
-    null,
-  );
   const navigate = useNavigate();
 
   // Form initialization
@@ -62,30 +58,6 @@ export const Component = () => {
     }
   };
 
-  // Directory selection handler
-  const handleDirectorySelect = async () => {
-    try {
-      const selected = await open({
-        directory: true,
-        multiple: false,
-      });
-
-      if (selected && !Array.isArray(selected)) {
-        setSelectedDirectory(selected);
-        toast({
-          title: 'Directory Selected',
-          description: selected,
-        });
-      }
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to select directory',
-        variant: 'destructive',
-      });
-    }
-  };
-
   return (
     <Form {...form}>
       <form
@@ -95,6 +67,7 @@ export const Component = () => {
         {/* API Configuration Section */}
         <div className="mb-6">
           <Toggle
+            type="button"
             variant="outline"
             onClick={() => setShowApiFields(!showApiFields)}
           >
@@ -164,28 +137,7 @@ export const Component = () => {
             <TabsTrigger value={TABS.UPLOAD}>Upload</TabsTrigger>
           </TabsList>
 
-          <TabsContent value={TABS.DIRECTORY}>
-            <Card>
-              <CardContent className="pt-6">
-                <p className="text-sm text-muted-foreground mb-4">
-                  Select a directory containing your static website files. The
-                  directory should include an index.html file and all necessary
-                  assets.
-                </p>
-                <div className="space-y-2">
-                  <Button variant="secondary" onClick={handleDirectorySelect}>
-                    Choose Directory
-                  </Button>
-                  {selectedDirectory && (
-                    <p className="text-sm text-muted-foreground">
-                      Selected: {selectedDirectory}
-                    </p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
+          <DirectoryTab />
           <UploadTab setActiveTab={setActiveTab} />
         </Tabs>
         <p className="text-[0.8rem] font-medium text-destructive mt-2">
