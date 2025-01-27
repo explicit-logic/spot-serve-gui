@@ -22,6 +22,7 @@ function DirectoryTab() {
       const selected = await open({
         directory: true,
         multiple: false,
+        recursive: true,
       });
 
       if (selected && !Array.isArray(selected)) {
