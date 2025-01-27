@@ -16,6 +16,8 @@ export async function createZipFromDirectory(
 
   async function processEntries(parent: string, entries: DirEntry[]) {
     for (const entry of entries) {
+      if (entry.name.startsWith('.')) continue;
+
       const fullPath = await join(parent, entry.name);
 
       // Calculate relative path manually
