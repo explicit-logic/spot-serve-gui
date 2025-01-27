@@ -7,6 +7,9 @@ import Connect from './connect';
 // Lib
 import { listenMessage } from '@/lib/peer/listenMessage';
 
+// Config
+import { WEBSITE_URL } from '@/config/remote';
+
 export default function ConnectContainer() {
   const { state } = useLocation() as { state: { file: File } };
   const navigate = useNavigate();
@@ -18,7 +21,7 @@ export default function ConnectContainer() {
   }
 
   const peerId = peer.id;
-  const websiteUrl = `https://spot-serve.pages.dev?r=${peerId}`;
+  const websiteUrl = `${WEBSITE_URL}?r=${peerId}`;
 
   useEffect(() => {
     const unListen = listenMessage(

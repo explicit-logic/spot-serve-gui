@@ -1,8 +1,8 @@
-// QRPageComponent.tsx
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { Copy } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
@@ -35,12 +35,20 @@ export default function Connect({
     }
   };
 
+  const openWebsite = async () => {
+    await openUrl(websiteUrl);
+  };
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-lg p-6 space-y-6">
         {/* QR Code Section */}
         <div className="flex justify-center">
-          <div className="p-4 rounded-lg border border-gray-300">
+          <div
+            className="p-4 rounded-lg border border-gray-300 hover:border-blue-300 cursor-pointer"
+            onClick={openWebsite}
+            onKeyDown={openWebsite}
+          >
             <QRCode value={websiteUrl} size={256} />
           </div>
         </div>
