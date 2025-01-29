@@ -144,7 +144,7 @@ export const Component = () => {
           {errors.file?.message}
         </p>
 
-        <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 p-4 flex justify-end space-x-4 bg-white dark:bg-zinc-950">
+        <div className="fixed bottom-0 left-0 right-0 border-t border-gray-200 p-4 flex justify-end space-x-4 bg-background">
           <Button
             type="button"
             variant="outline"
