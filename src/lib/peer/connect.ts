@@ -12,7 +12,7 @@ import { eventEmitter } from '@/lib/eventEmitter';
 // Store
 import { clear, getServer, setServer } from './store';
 
-import { addConnection } from './addConnection';
+import { addConnection } from './add-connection';
 
 const TIMEOUT = 60_000;
 
@@ -55,5 +55,5 @@ export async function connect() {
 function resetAll() {
   clear();
   setServer(undefined);
-  eventEmitter.emit(SERVER_EVENTS.CONNECTION, {});
+  eventEmitter.emit(SERVER_EVENTS.CONNECTION, []);
 }

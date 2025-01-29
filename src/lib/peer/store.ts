@@ -13,7 +13,7 @@ export function deleteConnection(connectionId: DataConnection['peer']) {
 }
 
 export function getConnections() {
-  return connectionMap.values();
+  return Array.from(connectionMap.values());
 }
 
 export function getServer() {

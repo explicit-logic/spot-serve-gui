@@ -5,7 +5,7 @@ import { useAsyncValue, useLocation, useNavigate } from 'react-router';
 import Connect from './connect';
 
 // Lib
-import { listenMessage } from '@/lib/peer/listenMessage';
+import { listenMessage } from '@/lib/peer/listen-message';
 
 // Config
 import { WEBSITE_URL } from '@/config/remote';
@@ -39,21 +39,10 @@ export default function ConnectContainer() {
     };
   }, [file]);
 
-  const handleDisconnect = () => {
+  const goBack = () => {
     // Handle disconnect logic
     navigate('/upload');
   };
 
-  const handleSendMessage = () => {
-    // Handle send message logic
-    console.log('Sending message...');
-  };
-
-  return (
-    <Connect
-      websiteUrl={websiteUrl}
-      onDisconnect={handleDisconnect}
-      onSendMessage={handleSendMessage}
-    />
-  );
+  return <Connect websiteUrl={websiteUrl} goBack={goBack} />;
 }
