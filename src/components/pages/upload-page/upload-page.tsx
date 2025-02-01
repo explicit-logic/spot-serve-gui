@@ -2,20 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Toggle } from '@/components/ui/toggle';
 
 import { useForm } from 'react-hook-form';
 
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import UploadTab from './components/upload-tab';
@@ -23,6 +14,7 @@ import UploadTab from './components/upload-tab';
 import { TABS } from './constants';
 
 import DirectoryTab from './components/directory-tab';
+import SetupApi from './components/setup-api';
 import { type Values, schema } from './schema';
 
 const defaultValues = {
@@ -32,8 +24,6 @@ const defaultValues = {
 };
 
 export const Component = () => {
-  const [showApiFields, setShowApiFields] = useState(false);
-
   const [activeTab, setActiveTab] = useState<string>(TABS.DIRECTORY);
   const navigate = useNavigate();
 
@@ -65,66 +55,7 @@ export const Component = () => {
         className="container mx-auto p-4 max-w-3xl min-h-screen"
       >
         {/* API Configuration Section */}
-        <div className="mb-6">
-          <Toggle
-            type="button"
-            variant="outline"
-            onClick={() => setShowApiFields(!showApiFields)}
-          >
-            Add API
-          </Toggle>
-
-          {showApiFields && (
-            <div className="flex gap-2 mt-4">
-              <div className="flex flex-row space-x-2">
-                <Label htmlFor="host" className="py-3">
-                  Host
-                </Label>
-
-                <FormField
-                  control={form.control}
-                  name="host"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormControl>
-                        <Input
-                          placeholder="127.0.0.1"
-                          className="w-64"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <div className="flex flex-row space-x-2">
-                <Label htmlFor="port" className="py-3">
-                  Port
-                </Label>
-                <FormField
-                  control={form.control}
-                  name="port"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormControl>
-                        <Input
-                          placeholder="3000"
-                          type="text"
-                          inputMode="numeric"
-                          className="max-w-24"
-                          pattern="[0-9]*"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        <SetupApi />
 
         {/* Tabs Section */}
         <Tabs
