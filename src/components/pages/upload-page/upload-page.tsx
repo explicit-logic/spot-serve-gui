@@ -18,6 +18,7 @@ import SetupApi from './components/setup-api';
 import { type Values, schema } from './schema';
 
 const defaultValues = {
+  backend: false,
   host: '127.0.0.1',
   port: 3000,
   file: undefined,

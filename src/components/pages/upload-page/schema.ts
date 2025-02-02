@@ -3,6 +3,7 @@ import { z } from 'zod';
 const HOST_MESSAGE = 'Please enter a valid URL or IP address';
 
 export const schema = z.object({
+  backend: z.boolean().default(false),
   host: z.union([
     z.string().url({ message: HOST_MESSAGE }),
     z.string().ip({ message: HOST_MESSAGE }),
