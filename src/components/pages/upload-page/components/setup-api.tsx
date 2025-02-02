@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/form';
 
 function SetupApi() {
-  const [showApiFields, setShowApiFields] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const form = useFormContext<Values>();
   const { watch } = form;
@@ -32,6 +31,7 @@ function SetupApi() {
 
   const host = watch('host');
   const port = watch('port');
+  const backend = watch('backend');
 
   const test = async () => {
     try {
@@ -62,12 +62,13 @@ function SetupApi() {
       <Toggle
         type="button"
         variant="outline"
-        onClick={() => setShowApiFields(!showApiFields)}
+        pressed={backend}
+        onClick={() => form.setValue('backend', !backend)}
       >
         Add API
       </Toggle>
 
-      {showApiFields && (
+      {backend && (
         <div className="flex gap-2 mt-4">
           <div className="flex flex-row space-x-2">
             <Label htmlFor="host" className="py-3">
