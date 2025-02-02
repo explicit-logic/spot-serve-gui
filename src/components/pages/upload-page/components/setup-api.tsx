@@ -1,8 +1,9 @@
 import { useToast } from '@/hooks/use-toast';
 import { useModal } from '@ebay/nice-modal-react';
-import { invoke } from '@tauri-apps/api/core';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
+
+import { setupTunnel } from '@/commands/tunnel';
 
 import TunnelDialog from '@/components/dialogs/tunnel-dialog';
 
@@ -13,7 +14,7 @@ import { Toggle } from '@/components/ui/toggle';
 
 import { useFormContext } from 'react-hook-form';
 
-import type { Values } from '../schema';
+import type { Values } from '@/schemas/website';
 
 import {
   FormControl,
@@ -36,10 +37,7 @@ function SetupApi() {
   const test = async () => {
     try {
       setIsLoading(true);
-      const url: string = await invoke('setup_tunnel', {
-        localHost: host,
-        localPort: Number(port),
-      });
+      const url: string = await setupTunnel(port, host);
       toast({
         description: 'Connection established',
         duration: 1000,
