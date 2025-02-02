@@ -1,13 +1,14 @@
+import { useToast } from '@/hooks/use-toast';
+import { useModal } from '@ebay/nice-modal-react';
 import { invoke } from '@tauri-apps/api/core';
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import { useModal } from '@ebay/nice-modal-react';
-
 import TunnelDialog from '@/components/dialogs/tunnel-dialog';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-// Components
 import { Toggle } from '@/components/ui/toggle';
 
 import { useFormContext } from 'react-hook-form';
@@ -23,22 +24,36 @@ import {
 
 function SetupApi() {
   const [showApiFields, setShowApiFields] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const form = useFormContext<Values>();
   const { watch } = form;
   const modal = useModal(TunnelDialog);
+  const { toast } = useToast();
 
   const host = watch('host');
   const port = watch('port');
 
   const test = async () => {
     try {
+      setIsLoading(true);
       const url: string = await invoke('setup_tunnel', {
         localHost: host,
         localPort: Number(port),
       });
+      toast({
+        description: 'Connection established',
+        duration: 1000,
+      });
       modal.show({ url });
     } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Failed to connect',
+        description: (error as Error).toString(),
+      });
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,7 +115,9 @@ function SetupApi() {
               )}
             />
           </div>
-          <Button type="button" onClick={test}>
+
+          <Button type="button" disabled={isLoading} onClick={test}>
+            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Test
           </Button>
         </div>
