@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 
@@ -13,9 +14,11 @@ import UploadTab from './components/upload-tab';
 
 import { TABS } from './constants';
 
+import { type Values, type Website, schema } from '@/schemas/website';
 import DirectoryTab from './components/directory-tab';
 import SetupApi from './components/setup-api';
-import { type Values, schema } from './schema';
+
+import { setupTunnel } from '@/commands/tunnel';
 
 const defaultValues = {
   backend: false,
@@ -27,6 +30,7 @@ const defaultValues = {
 export const Component = () => {
   const [activeTab, setActiveTab] = useState<string>(TABS.DIRECTORY);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   // Form initialization
   const form = useForm<Values>({
@@ -39,13 +43,23 @@ export const Component = () => {
   // Handle API form submission
   const onSubmit = async (data: Values) => {
     try {
-      navigate('/connect', { replace: true, state: data });
+      setIsLoading(true);
+      const { backend, port, host } = data;
+      const state: Website = { ...data };
+
+      if (backend) {
+        state.tunnel = await setupTunnel(port, host);
+      }
+
+      navigate('/connect', { replace: true, state });
     } catch (error) {
       toast({
         title: 'Error',
         description: (error as Error).toString(),
         variant: 'destructive',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -84,7 +98,8 @@ export const Component = () => {
           >
             Reset
           </Button>
-          <Button type="submit" className="px-24">
+          <Button type="submit" className="w-60">
+            {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Deploy
           </Button>
         </div>

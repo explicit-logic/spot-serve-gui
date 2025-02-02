@@ -10,7 +10,7 @@ import { toast } from '@/hooks/use-toast';
 import { createZipFromDirectory } from '@/utils/create-zip-from-directory';
 import { open } from '@tauri-apps/plugin-dialog';
 
-import type { Values } from '../schema';
+import type { Values } from '@/schemas/website';
 
 function DirectoryTab() {
   const [selectedDirectory, setSelectedDirectory] = useState<string | null>();

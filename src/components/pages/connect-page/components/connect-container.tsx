@@ -1,3 +1,4 @@
+import type { Website } from '@/schemas/website';
 import type Peer from 'peerjs';
 import { useEffect } from 'react';
 import { useAsyncValue, useLocation, useNavigate } from 'react-router';
@@ -11,7 +12,7 @@ import { listenMessage } from '@/lib/peer/listen-message';
 import { WEBSITE_URL } from '@/config/remote';
 
 export default function ConnectContainer() {
-  const { state } = useLocation() as { state: { file: File } };
+  const { state } = useLocation() as { state: Website };
   const navigate = useNavigate();
   const peer = useAsyncValue() as Peer;
   const { file } = state || {};
@@ -29,7 +30,7 @@ export default function ConnectContainer() {
       (connection, { id }) => {
         connection.send({
           id,
-          result: file,
+          result: state,
         });
       },
     );
@@ -37,7 +38,7 @@ export default function ConnectContainer() {
     return () => {
       unListen();
     };
-  }, [file]);
+  }, [state]);
 
   const goBack = () => {
     // Handle disconnect logic

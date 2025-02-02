@@ -8,7 +8,7 @@ import { Cloud, FileArchive } from 'lucide-react';
 
 import { useFormContext } from 'react-hook-form';
 
-import type { Values } from '../schema';
+import type { Values } from '@/schemas/website';
 
 import {
   Card,

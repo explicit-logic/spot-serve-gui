@@ -18,7 +18,14 @@ const TIMEOUT = 60_000;
 
 export async function connect() {
   const cachedServer = getServer();
-  if (cachedServer) return cachedServer;
+  if (cachedServer) {
+    if (!cachedServer.id) {
+      while (!cachedServer.id) {}
+      return cachedServer;
+    }
+
+    return cachedServer;
+  }
 
   eventEmitter.emit(SERVER_EVENTS.LOADING);
 

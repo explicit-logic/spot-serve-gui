@@ -19,3 +19,7 @@ export const schema = z.object({
 });
 
 export type Values = z.infer<typeof schema>;
+
+export interface Website extends Values {
+  tunnel?: string;
+}
