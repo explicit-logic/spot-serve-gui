@@ -3,7 +3,7 @@ import { useModal } from '@ebay/nice-modal-react';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import { setupTunnel } from '@/commands/tunnel';
+import { createTunnel } from '@/commands/tunnel';
 
 import TunnelDialog from '@/components/dialogs/tunnel-dialog';
 
@@ -30,14 +30,16 @@ function SetupApi() {
   const modal = useModal(TunnelDialog);
   const { toast } = useToast();
 
-  const host = watch('host');
   const port = watch('port');
   const backend = watch('backend');
 
   const test = async () => {
     try {
       setIsLoading(true);
-      const url: string = await setupTunnel(port, host);
+      // const url: string = await setupTunnel(port, host);
+      const response = await createTunnel('localhost', 3000);
+      console.log(response);
+      const { url } = response;
       toast({
         description: 'Connection established',
         duration: 1000,
@@ -68,28 +70,6 @@ function SetupApi() {
 
       {backend && (
         <div className="flex gap-2 mt-4">
-          <div className="flex flex-row space-x-2">
-            <Label htmlFor="host" className="py-3">
-              Host
-            </Label>
-
-            <FormField
-              control={form.control}
-              name="host"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormControl>
-                    <Input
-                      placeholder="127.0.0.1"
-                      className="w-64"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
           <div className="flex flex-row space-x-2">
             <Label htmlFor="port" className="py-3">
               Port

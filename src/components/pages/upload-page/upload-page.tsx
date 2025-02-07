@@ -18,7 +18,7 @@ import { type Values, type Website, schema } from '@/schemas/website';
 import DirectoryTab from './components/directory-tab';
 import SetupApi from './components/setup-api';
 
-import { setupTunnel } from '@/commands/tunnel';
+// import { setupTunnel } from '@/commands/tunnel';
 
 const defaultValues = {
   backend: false,
@@ -44,12 +44,12 @@ export const Component = () => {
   const onSubmit = async (data: Values) => {
     try {
       setIsLoading(true);
-      const { backend, port, host } = data;
-      const state: Website = { ...data };
-
-      if (backend) {
-        state.tunnel = await setupTunnel(port, host);
-      }
+      const { backend, file, port } = data;
+      const state: Website = {
+        backend,
+        file,
+        port,
+      };
 
       navigate('/connect', { replace: true, state });
     } catch (error) {
@@ -98,7 +98,7 @@ export const Component = () => {
           >
             Reset
           </Button>
-          <Button type="submit" className="w-60">
+          <Button type="submit" disabled={isLoading} className="w-60">
             {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
             Deploy
           </Button>

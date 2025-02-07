@@ -1,3 +1,4 @@
+import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 
@@ -13,8 +14,10 @@ import { open } from '@tauri-apps/plugin-dialog';
 import type { Values } from '@/schemas/website';
 
 function DirectoryTab() {
-  const [selectedDirectory, setSelectedDirectory] = useState<string | null>();
-  const { setValue } = useFormContext<Values>();
+  const { setValue, watch } = useFormContext<Values>();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const selectedDirectory = watch('directory');
 
   // Directory selection handler
   const handleDirectorySelect = async () => {
@@ -26,10 +29,10 @@ function DirectoryTab() {
       });
 
       if (selected && !Array.isArray(selected)) {
+        setIsLoading(true);
         const file = await createZipFromDirectory(selected);
         setValue('file', file);
-
-        setSelectedDirectory(selected);
+        setValue('directory', selected);
         toast({
           title: 'Directory Selected',
           description: selected,
@@ -42,6 +45,8 @@ function DirectoryTab() {
         description: (error as Error).toString(),
         variant: 'destructive',
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,8 +63,10 @@ function DirectoryTab() {
             <Button
               type="button"
               variant="secondary"
+              disabled={isLoading}
               onClick={handleDirectorySelect}
             >
+              {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
               Choose Directory
             </Button>
             {selectedDirectory && (
