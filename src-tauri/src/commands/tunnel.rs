@@ -49,19 +49,19 @@ pub async fn restart_tunnel(app: AppHandle, state: State<'_, TunnelProcess>) -> 
 
 #[tauri::command]
 pub async fn stop_tunnel(state: State<'_, TunnelProcess>) -> Result<(), String> {
+    stop_tunnel_internal(&state).await
+}
+
+pub async fn stop_tunnel_internal(state: &TunnelProcess) -> Result<(), String> {
     let process = state.process.clone();
     let mut process_guard = process.lock().await;
     
     if let Some(child) = process_guard.take() {
-        match child.kill() {
-            Ok(_) => {
-                state.reset_state().await;
-                Ok(())
-            },
-            Err(e) => Err(format!("Failed to stop tunnel: {}", e))
-        }
+        child.kill().map_err(|e| format!("Failed to stop tunnel: {}", e))?;
+        state.reset_state().await;
+        Ok(())
     } else {
-        Ok(()) // Process was not running, so we're good
+        Ok(()) // Process was not running
     }
 }
 
