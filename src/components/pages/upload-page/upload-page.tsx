@@ -18,7 +18,7 @@ import { type Values, type Website, schema } from '@/schemas/website';
 import DirectoryTab from './components/directory-tab';
 import SetupApi from './components/setup-api';
 
-// import { setupTunnel } from '@/commands/tunnel';
+import { tunnelManager } from '@/lib/tunnel';
 
 const defaultValues = {
   backend: false,
@@ -50,6 +50,10 @@ export const Component = () => {
         file,
         port,
       };
+
+      if (backend) {
+        state.tunnel = await tunnelManager.startTunnel(port);
+      }
 
       navigate('/connect', { replace: true, state });
     } catch (error) {
