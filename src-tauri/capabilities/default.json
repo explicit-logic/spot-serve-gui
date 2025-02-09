@@ -8,6 +8,18 @@
     "opener:default",
     "dialog:allow-open",
     "fs:allow-app-read",
-    "fs:allow-app-read-recursive"
+    "fs:allow-app-read-recursive",
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "binaries/cloudflared/cloudflared",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    },
+    "shell:allow-open",
+    "shell:allow-spawn"
   ]
 }

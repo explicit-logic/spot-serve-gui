@@ -3,7 +3,7 @@ import { useModal } from '@ebay/nice-modal-react';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 
-import { createTunnel } from '@/commands/tunnel';
+import { tunnelManager } from '@/lib/tunnel';
 
 import TunnelDialog from '@/components/dialogs/tunnel-dialog';
 
@@ -36,10 +36,8 @@ function SetupApi() {
   const test = async () => {
     try {
       setIsLoading(true);
-      // const url: string = await setupTunnel(port, host);
-      const response = await createTunnel('localhost', 3000);
-      console.log(response);
-      const { url } = response;
+      const url = await tunnelManager.startTunnel(port);
+
       toast({
         description: 'Connection established',
         duration: 1000,
