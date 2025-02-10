@@ -22,7 +22,8 @@
       "recommended": true,
       "suspicious": {
         "noArrayIndexKey": "off",
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noAssignInExpressions": "off"
       },
       "style": {
         "noNonNullAssertion": "off"
