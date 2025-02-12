@@ -4,7 +4,7 @@ import { ConnectionProvider } from '@/providers/connection-provider';
 import NiceModal from '@ebay/nice-modal-react';
 import { Outlet } from 'react-router';
 
-import './app.css';
+import './styles.css';
 
 function App() {
   return (

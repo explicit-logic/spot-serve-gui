@@ -8,4 +8,4 @@ else
   exit 1
 fi
 
-bunx tauri build --verbose
+npx tauri build --verbose

@@ -1,7 +1,10 @@
 use std::sync::Arc;
-use tauri::{AppHandle, Emitter, State, async_runtime};
-use tauri_plugin_shell::{process::{CommandChild, CommandEvent}, ShellExt};
-use tokio::sync::{Mutex, mpsc};
+use tauri::{async_runtime, AppHandle, Emitter, State};
+use tauri_plugin_shell::{
+    process::{CommandChild, CommandEvent},
+    ShellExt,
+};
+use tokio::sync::{mpsc, Mutex};
 
 pub struct TunnelProcess {
     process: Arc<Mutex<Option<CommandChild>>>,
@@ -33,16 +36,19 @@ impl TunnelProcess {
 }
 
 #[tauri::command]
-pub async fn restart_tunnel(app: AppHandle, state: State<'_, TunnelProcess>) -> Result<String, String> {
+pub async fn restart_tunnel(
+    app: AppHandle,
+    state: State<'_, TunnelProcess>,
+) -> Result<String, String> {
     // Get the current port before stopping
     let current_port = state.get_current_port().await;
-    
+
     // If no port is set, we can't restart
     let port = current_port.ok_or("No port configured for restart".to_string())?;
-    
+
     // Stop the tunnel
     stop_tunnel(state.clone()).await?;
-    
+
     // Start the tunnel with the same port
     start_tunnel(app, state, port).await
 }
@@ -55,9 +61,11 @@ pub async fn stop_tunnel(state: State<'_, TunnelProcess>) -> Result<(), String> 
 pub async fn stop_tunnel_internal(state: &TunnelProcess) -> Result<(), String> {
     let process = state.process.clone();
     let mut process_guard = process.lock().await;
-    
+
     if let Some(child) = process_guard.take() {
-        child.kill().map_err(|e| format!("Failed to stop tunnel: {}", e))?;
+        child
+            .kill()
+            .map_err(|e| format!("Failed to stop tunnel: {}", e))?;
         state.reset_state().await;
         Ok(())
     } else {
@@ -66,7 +74,11 @@ pub async fn stop_tunnel_internal(state: &TunnelProcess) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn start_tunnel(app: AppHandle, state: State<'_, TunnelProcess>, port: u16) -> Result<String, String> {
+pub async fn start_tunnel(
+    app: AppHandle,
+    state: State<'_, TunnelProcess>,
+    port: u16,
+) -> Result<String, String> {
     let process = state.process.clone();
     let url = state.url.clone();
     let current_port = state.current_port.clone();
@@ -74,7 +86,7 @@ pub async fn start_tunnel(app: AppHandle, state: State<'_, TunnelProcess>, port:
     let mut process_guard = process.lock().await;
     let url_guard = url.lock().await;
     let mut port_guard = current_port.lock().await;
-    
+
     // Check if we need to restart due to port change
     if let Some(current) = *port_guard {
         if current != port {
@@ -92,22 +104,30 @@ pub async fn start_tunnel(app: AppHandle, state: State<'_, TunnelProcess>, port:
             return Ok(existing_url.clone());
         }
     }
-    
+
     // Update the current port
     *port_guard = Some(port);
     drop(port_guard);
-    
+
     if process_guard.is_some() {
         return Err("Tunnel is already running".into());
     }
     drop(url_guard);
 
     let (mut rx_cmd, child) = match app.shell().sidecar("cloudflared") {
-        Ok(cmd) => match cmd.args(&["tunnel", "--url", &format!("http://127.0.0.1:{}", port)]).spawn() {
+        Ok(cmd) => match cmd
+            .args(&["tunnel", "--url", &format!("http://127.0.0.1:{}", port)])
+            .spawn()
+        {
             Ok(spawned) => spawned,
             Err(e) => return Err(format!("Failed to spawn sidecar: {}", e)),
         },
-        Err(e) => return Err(format!("Failed to create `cloudflared` binary command: {}", e)),
+        Err(e) => {
+            return Err(format!(
+                "Failed to create `cloudflared` binary command: {}",
+                e
+            ))
+        }
     };
 
     *process_guard = Some(child);
@@ -131,7 +151,9 @@ pub async fn start_tunnel(app: AppHandle, state: State<'_, TunnelProcess>, port:
                     let _ = app_handle.emit("tunnel_err", log_line.clone());
 
                     if let Some(url_start) = log_line.find("https://") {
-                        let url_end = log_line[url_start..].find(' ').unwrap_or(log_line.len() - url_start);
+                        let url_end = log_line[url_start..]
+                            .find(' ')
+                            .unwrap_or(log_line.len() - url_start);
                         let url = &log_line[url_start..url_start + url_end];
                         if url.contains("trycloudflare.com") {
                             let mut url_guard = url_clone.lock().await;
@@ -150,7 +172,10 @@ pub async fn start_tunnel(app: AppHandle, state: State<'_, TunnelProcess>, port:
         }
     });
 
-    let url = rx.recv().await.ok_or("Failed to get tunnel URL".to_string())?;
+    let url = rx
+        .recv()
+        .await
+        .ok_or("Failed to get tunnel URL".to_string())?;
     Ok(url)
 }
 

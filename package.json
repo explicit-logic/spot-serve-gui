@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "lint": "biome check --write ./src",
-    "pull:cloudflared": "bun ./scripts/pull-cloudflared"
+    "pull:cloudflared": "node ./scripts/pull-cloudflared"
   },
   "dependencies": {
     "@ebay/nice-modal-react": "^1.2.13",
@@ -27,6 +27,7 @@
     "@tauri-apps/plugin-fs": "^2.2.0",
     "@tauri-apps/plugin-opener": "^2",
     "@tauri-apps/plugin-shell": "^2.2.0",
+    "@tauri-apps/plugin-updater": "^2.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "eventemitter3": "^5.0.1",
@@ -47,7 +48,6 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@tauri-apps/cli": "^2",
-    "@types/bun": "latest",
     "@types/node": "^22.10.6",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
