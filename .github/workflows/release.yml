@@ -1,0 +1,119 @@
+name: 'Release'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+            target_triple: 'aarch64-apple-darwin'
+            cloudflared_asset: 'cloudflared-darwin-arm64.tgz'
+          - platform: 'macos-13'
+            args: '--target x86_64-apple-darwin'
+            target_triple: 'x86_64-apple-darwin'
+            cloudflared_asset: 'cloudflared-darwin-amd64.tgz'
+          - platform: 'ubuntu-22.04'
+            args: ''
+            target_triple: 'x86_64-unknown-linux-gnu'
+            cloudflared_asset: 'cloudflared-linux-amd64'
+          - platform: 'windows-latest'
+            args: ''
+            target_triple: 'x86_64-pc-windows-msvc'
+            cloudflared_asset: 'cloudflared-windows-amd64.exe'
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Download cloudflared binary for Unix (macOS and Linux)
+      - name: Download cloudflared (Unix)
+        if: matrix.platform != 'windows-latest'
+        run: wget https://github.com/cloudflare/cloudflared/releases/latest/download/${{ matrix.cloudflared_asset }}
+
+      # Download cloudflared binary for Windows using PowerShell
+      - name: Download cloudflared (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/cloudflare/cloudflared/releases/latest/download/${{ matrix.cloudflared_asset }}" -OutFile "${{ matrix.cloudflared_asset }}"
+
+      # Extract if downloaded file is .tgz (macOS only)
+      - name: Extract cloudflared (macOS)
+        if: contains(matrix.cloudflared_asset, '.tgz')
+        run: tar -xzf ${{ matrix.cloudflared_asset }}
+
+      - name: Prepare cloudflared binary (MacOS)
+        if: contains(matrix.platform, 'macos')
+        run: |
+          mkdir -p ./src-tauri/binaries/cloudflared/
+          mv cloudflared "./src-tauri/binaries/cloudflared/cloudflared-${{ matrix.target_triple}}"
+          chmod +x "./src-tauri/binaries/cloudflared/cloudflared-${{ matrix.target_triple}}"
+
+      - name: Prepare cloudflared binary (Linux)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          mkdir -p ./src-tauri/binaries/cloudflared/
+          mv "${{ matrix.cloudflared_asset}}" "./src-tauri/binaries/cloudflared/cloudflared-${{ matrix.target_triple}}"
+          chmod +x "./src-tauri/binaries/cloudflared/cloudflared-${{ matrix.target_triple}}"
+
+      # Special handling for Windows platform
+      - name: Prepare cloudflared binary (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "./src-tauri/binaries/cloudflared/"
+          Move-Item -Path "${{ matrix.cloudflared_asset}}" -Destination "./src-tauri/binaries/cloudflared/cloudflared-${{ matrix.target_triple}}.exe"
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          VITE_WEBSITE_URL: ${{ vars.VITE_WEBSITE_URL }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "Spot Serve v__VERSION__"
+          releaseBody: "See the assets to download this version and install."
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}

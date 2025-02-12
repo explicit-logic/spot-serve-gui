@@ -29,17 +29,17 @@ Download the latest version for your operating system from the [releases page](h
 2. Install dependencies:
     ```bash
     cd spot-serve-gui
-    bun install
+    npm install
     ```
 
 3. Run in development mode:
     ```bash
-    bun run tauri dev
+    npm run tauri dev
     ```
 
 4. Build for your platform:
     ```bash
-    bun run tauri build
+    npm run tauri build
     ```
 
 ## Usage
