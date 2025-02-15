@@ -12,6 +12,35 @@ import { relaunch } from '@tauri-apps/plugin-process';
 import { type Update, check } from '@tauri-apps/plugin-updater';
 import { useCallback, useEffect, useState } from 'react';
 
+function formatDate(dateString: string) {
+  try {
+    // Split the date and time parts
+    const [datePart, timePart] = dateString.split(' ');
+
+    // Split the date into YYYY, MM, DD
+    const [year, month, day] = datePart.split('-').map(Number);
+
+    // Split the time into HH, MM, SS and milliseconds
+    const [time, milliseconds] = timePart.split('.');
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+
+    // Create a new Date object using the parsed parts
+    return new Date(
+      Date.UTC(
+        year,
+        month - 1,
+        day,
+        hours,
+        minutes,
+        seconds,
+        Number(milliseconds),
+      ),
+    ).toLocaleString();
+  } catch {
+    return dateString;
+  }
+}
+
 let update: Update | undefined;
 
 const UpdateDialog = NiceModal.create(() => {
@@ -41,9 +70,6 @@ const UpdateDialog = NiceModal.create(() => {
       setCurrentVersion(version);
       const newVersion = await check();
       if (newVersion) {
-        if (version === newVersion?.version) {
-          setNewest(true);
-        }
         update = newVersion;
         setUpdateAvailable(true);
         setNewVersion({
@@ -52,6 +78,7 @@ const UpdateDialog = NiceModal.create(() => {
           body: update.body,
         });
       } else {
+        setNewest(true);
         setUpdateAvailable(false);
       }
     } catch (err) {
@@ -102,9 +129,7 @@ const UpdateDialog = NiceModal.create(() => {
   const handleRestart = async () => {
     await relaunch();
   };
-  const released = newVersion?.date
-    ? new Date(newVersion?.date).toLocaleDateString()
-    : '';
+  const released = newVersion?.date ? formatDate(newVersion?.date) : '';
 
   return (
     <Dialog open={modal.visible} onOpenChange={modal.hide}>
@@ -127,11 +152,13 @@ const UpdateDialog = NiceModal.create(() => {
               >
                 {isChecking ? 'Checking...' : 'Check for Updates'}
               </Button>
-              {!isChecking && !updateAvailable && (
-                <p className="text-sm text-muted-foreground">
-                  {newest ? "You're up to date!" : ' '}
-                </p>
-              )}
+              <div className="h-5">
+                {!isChecking && !updateAvailable && (
+                  <p className="text-sm text-muted-foreground">
+                    {newest ? "You're up to date!" : ' '}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
