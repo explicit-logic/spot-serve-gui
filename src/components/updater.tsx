@@ -32,7 +32,7 @@ function Updater() {
         >
           <CircleDot strokeWidth="3" className="w-3 h-3" />
         </button>
-        <div className="mb-1 ml-0.5 font-light text-xs [writing-mode:vertical-lr]">
+        <div className="mb-1 ml-0.5 font-light tabular-nums text-xs [writing-mode:vertical-lr]">
           {version}
         </div>
       </div>
