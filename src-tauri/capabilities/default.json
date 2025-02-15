@@ -6,7 +6,10 @@
   "permissions": [
     "core:default",
     "opener:default",
+    "dialog:allow-ask",
+    "dialog:allow-message",
     "dialog:allow-open",
+    "process:allow-restart",
     "fs:allow-app-read",
     "fs:allow-app-read-recursive",
     {
