@@ -42,11 +42,12 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEMyOThEM0E1MzQ4MDkxQUIKUldTcmtZQTBwZE9Zd245bWczbjRhUlFhY1hXeHFJOURYcGNRVnFSSzU5aFNUMzZ0RTNyZnBYNC8K",
       "endpoints": [
-        "https://github.com/explicit-logic/spot-serve-gui/releases/latest/download/latest.json"
+        "https://spot-serve.pages.dev/latest.json"
       ],
       "windows": {
         "installMode": "passive"
-      }
+      },
+      "dialog": true
     }
   }
 }

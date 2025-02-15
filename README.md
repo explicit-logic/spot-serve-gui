@@ -67,3 +67,8 @@ Contributions are welcome! Please feel free to submit a Pull Request. For major 
 ## Related Projects
 
 - [Spot Serve Web Platform](https://github.com/yakovenkodenis/spot-serve-web) - The web component of Spot Serve
+
+## Acknowledgements
+
+* Cloudflare Tunnel: [cloudflare/cloudflared](https://github.com/cloudflare/cloudflared)
+* PeerJS: [peerjs](https://peerjs.com/)
