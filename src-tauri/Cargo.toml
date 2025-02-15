@@ -1,6 +1,6 @@
 [package]
 name = "spot-serve-gui"
-version = "0.1.1"
+version = "0.1.2"
 description = "The desktop companion app for Spot Serve - a seamless solution for developers to share quick, interactive previews of their websites."
 authors = ["you"]
 edition = "2021"
