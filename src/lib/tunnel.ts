@@ -32,7 +32,7 @@ export class TunnelManager {
    */
   async startTunnel(port: number): Promise<string> {
     try {
-      return await invoke<string>('start_tunnel', { port });
+      return await invoke<string>('start_tunnel', { port: Number(port) });
     } catch (error) {
       throw new Error(`Failed to start tunnel: ${error}`);
     }
