@@ -6,6 +6,7 @@ import { openUrl } from '@tauri-apps/plugin-opener';
 import { ArrowLeft, Copy } from 'lucide-react';
 import QRCode from 'react-qr-code';
 import ConnectStatus from './connect-status';
+import ConnectTunnel from './connect-tunnel';
 
 interface Props {
   websiteUrl: string;
@@ -44,7 +45,9 @@ export default function Connect({ websiteUrl, goBack }: Props) {
           </Button>
         </div>
         <ConnectStatus />
-        <div className="flex flex-1 justify-end" />
+        <div className="flex flex-1 justify-end">
+          <ConnectTunnel />
+        </div>
       </header>
       <main className="flex-auto flex items-center justify-center mb-16">
         <Card className="w-full max-w-lg p-6 space-y-6">

@@ -32,12 +32,17 @@ Download the latest version for your operating system from the [releases page](h
     npm install
     ```
 
-3. Run in development mode:
+3. Download `cloudflared`:
+    ```bash
+    npm run pull:cloudflared
+    ```
+
+4. Run in development mode:
     ```bash
     npm run tauri dev
     ```
 
-4. Build for your platform:
+5. Build for your platform:
     ```bash
     npm run tauri build
     ```
