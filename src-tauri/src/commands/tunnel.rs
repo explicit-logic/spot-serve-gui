@@ -22,10 +22,14 @@ impl TunnelProcess {
     }
 
     async fn reset_state(&self) {
-        let mut url_guard = self.url.lock().await;
-        let mut port_guard = self.current_port.lock().await;
-        *url_guard = None;
-        *port_guard = None;
+        {
+            let mut url_guard = self.url.lock().await;
+            *url_guard = None;
+        }
+        {
+            let mut port_guard = self.current_port.lock().await;
+            *port_guard = None;
+        }
     }
 
     // Helper method to get current port
@@ -63,9 +67,9 @@ pub async fn stop_tunnel_internal(state: &TunnelProcess) -> Result<(), String> {
     let mut process_guard = process.lock().await;
 
     if let Some(child) = process_guard.take() {
-        child
-            .kill()
-            .map_err(|e| format!("Failed to stop tunnel: {}", e))?;
+        child.kill().map_err(|e| format!("Failed to stop tunnel: {}", e))?;
+        // Drop the process guard before resetting state
+        drop(process_guard);
         state.reset_state().await;
         Ok(())
     } else {
@@ -79,40 +83,45 @@ pub async fn start_tunnel(
     state: State<'_, TunnelProcess>,
     port: u16,
 ) -> Result<String, String> {
-    let process = state.process.clone();
-    let url = state.url.clone();
-    let current_port = state.current_port.clone();
+    // First, check if we need to restart due to port change
+    let current_port = {
+        let port_guard = state.current_port.lock().await;
+        *port_guard
+    };
 
-    let mut process_guard = process.lock().await;
-    let url_guard = url.lock().await;
-    let mut port_guard = current_port.lock().await;
-
-    // Check if we need to restart due to port change
-    if let Some(current) = *port_guard {
+    if let Some(current) = current_port {
         if current != port {
-            // Port has changed, need to stop existing process
-            if let Some(child) = process_guard.take() {
-                let _ = child.kill(); // Ignore errors here as we're restarting anyway
-                state.reset_state().await;
+            if let Err(e) = stop_tunnel_internal(&state).await {
+                eprintln!("Failed to stop tunnel: {}", e);
             }
         }
     }
 
+    let process = state.process.clone();
+    let mut process_guard = process.lock().await;
+
+    // Check the current URL and port after potential reset
+    let existing_url = {
+        let url_guard = state.url.lock().await;
+        url_guard.clone()
+    };
+
     // If process is already running with same port, return existing URL
-    if let Some(existing_url) = &*url_guard {
-        if Some(port) == *port_guard {
-            return Ok(existing_url.clone());
+    if let Some(url) = existing_url {
+        if Some(port) == current_port {
+            return Ok(url);
         }
     }
 
     // Update the current port
-    *port_guard = Some(port);
-    drop(port_guard);
+    {
+        let mut port_guard = state.current_port.lock().await;
+        *port_guard = Some(port);
+    }
 
     if process_guard.is_some() {
         return Err("Tunnel is already running".into());
     }
-    drop(url_guard);
 
     let (mut rx_cmd, child) = match app.shell().sidecar("cloudflared") {
         Ok(cmd) => match cmd
@@ -135,7 +144,7 @@ pub async fn start_tunnel(
 
     let (tx, mut rx) = mpsc::channel(1);
     let app_handle = app.clone();
-    let url_clone = url.clone();
+    let url_clone = state.url.clone();
 
     async_runtime::spawn(async move {
         while let Some(event) = rx_cmd.recv().await {
